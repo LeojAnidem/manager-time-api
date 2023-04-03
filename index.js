@@ -1,10 +1,21 @@
 import express from 'express'
+import mongoose from 'mongoose'
+import dotenv from 'dotenv'
 
 // 🪧 Import Routes
 import authRoute from './routes/auth.js'
 
 // 🆙 express variable
+dotenv.config()
 const app = express()
+
+// 🔌 Connect to DB
+const uri = process.env.ATLAS_URI
+mongoose.connect(uri)
+
+const db = mongoose.connection
+db.on('error', console.error.bind(console, 'connection error: '))
+db.once('open', () => console.log('Connected DB SuccessFully!'))
 
 // 🔐 Route Middlewares
 app.use('/api/user', authRoute)

@@ -13,8 +13,11 @@
   "author": "@Leoj_Anidem [Instagram/GitHub]",
   "license": "MIT",
   "dependencies": {
+    "dotenv": "16.0.3",
     "express": "4.18.2",
-    "mongoose": "7.0.3",
+    "mongoose": "7.0.3"
+  },
+  "devDependencies": {
     "nodemon": "2.0.22",
     "standard": "17.0.0"
   },
