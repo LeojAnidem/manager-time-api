@@ -11,11 +11,14 @@ const app = express()
 
 // 🔌 Connect to DB
 const uri = process.env.ATLAS_URI
-mongoose.connect(uri)
+mongoose.connect(uri, { dbName: 'recreate-BD' })
 
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error: '))
 db.once('open', () => console.log('Connected DB SuccessFully!'))
+
+// 🔐 Middleware
+app.use(express.json())
 
 // 🔐 Route Middlewares
 app.use('/api/user', authRoute)
