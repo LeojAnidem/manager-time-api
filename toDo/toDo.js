@@ -4,7 +4,7 @@
 
 // TODO [  ] Conectarse a base de datos
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-// TODO [  ] crear esquema de usuario
+// TODO [ ✅ ] crear esquema de usuario
 // TODO [  ] crear esquema de notas
 // TODO [ ✅ ] conexion a base datos
 // ------------------------------------------------------
