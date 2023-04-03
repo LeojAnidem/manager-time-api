@@ -1,7 +1,6 @@
 import mongoose from 'mongoose'
 
 const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
 
 const userSchema = new mongoose.Schema(
   {
@@ -30,10 +29,6 @@ const userSchema = new mongoose.Schema(
       select: false,
       type: String,
       required: [true, 'Please add a password'],
-      match: [
-        passwordRegex,
-        'Must be content: Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character'
-      ],
       min: 8,
       max: 1024
     },
