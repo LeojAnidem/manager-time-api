@@ -26,7 +26,6 @@ const userSchema = new mongoose.Schema(
       ]
     },
     password: {
-      select: false,
       type: String,
       required: [true, 'Please add a password'],
       min: 8,
