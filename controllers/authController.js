@@ -60,6 +60,7 @@ const login = async (req, res) => {
     })
   }
 
+  // payload for token (req.user)
   const userForToken = {
     id: user._id,
     username: `${user.name} ${user.lastName}`

@@ -12,7 +12,7 @@
 
 // TODO [  ] Crear ruta de autentificacion
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-// TODO [  ] Generar JWT
+// TODO [ ✅ ] Generar JWT
 // TODO [  ] Refrescar JWT
 // TODO [  ] Cierre de sesion al expirar JWT
 // TODO [  ] Persistencia de sesion
@@ -23,7 +23,7 @@
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // TODO [  ] Generar permisos por roles
 // TODO [  ] feature recuperar contraseña
-// TODO [  ] creacion de usuario
+// TODO [ ✅ ] creacion de usuario
 // TODO [  ] modificacion de usuario
 // TODO [  ] eliminacion de usuario
 // TODO [  ] gestion de usuario por admin

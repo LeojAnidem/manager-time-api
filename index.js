@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 
 // 🪧 Import Routes
 import authRoute from './routes/auth.js'
+import daysNotes from './routes/daysNotes.js'
 
 // 🆙 express variable
 dotenv.config()
@@ -22,6 +23,7 @@ app.use(express.json())
 
 // 🔐 Route Middlewares
 app.use('/api/user', authRoute)
+app.use('/api/daysNotes', daysNotes)
 
 // 🎧 Server listen
 const PORT = process.env.PORT || 3000

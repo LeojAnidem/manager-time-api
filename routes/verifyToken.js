@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 
-const auth = (req, res, next) => {
+export const auth = (req, res, next) => {
   const token = req.header('auth-token')
   if (!token) {
     return res.status(401).send({
@@ -12,6 +12,7 @@ const auth = (req, res, next) => {
   try {
     const verified = jwt.verify(token, process.env.SECRET_KEY)
     req.user = verified
+    next()
   } catch (err) {
     res.status(400).send({
       success: false,
@@ -19,5 +20,3 @@ const auth = (req, res, next) => {
     })
   }
 }
-
-export default { auth }
