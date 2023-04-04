@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { auth } from './verifyToken.js'
+import { auth } from '../middleware/verifyToken.js'
 import daysNotesController from '../controllers/daysNotesController.js'
 
 const router = Router()

@@ -2,8 +2,21 @@ import User from '../model/User.js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
+const isValidEmail = (email, res) => {
+  const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  return email.match(emailRegex)
+}
+
 const register = async (req, res) => {
   const { name, lastName, email, password } = req.body
+
+  // checking if the valid email
+  if (!isValidEmail(email)) {
+    return res.status(400).send({
+      success: false,
+      message: 'The email is not valid!'
+    })
+  }
 
   // checking if the user is already in the database
   const isExistEmail = await User.findOne({ email })
@@ -48,6 +61,14 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body
+
+  // checking if the email is valid
+  if (!isValidEmail(email)) {
+    return res.status(400).send({
+      success: false,
+      message: 'The email is not valid!'
+    })
+  }
 
   // checking if the email exist and password is correct
   const user = await User.findOne({ email })
