@@ -1,6 +1,5 @@
+import Role from '../model/Role.js'
 import User from '../model/User.js'
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
 
 const isValidEmail = (email, res) => {
   const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -8,7 +7,7 @@ const isValidEmail = (email, res) => {
 }
 
 const register = async (req, res) => {
-  const { name, lastName, email, password } = req.body
+  const { name, lastName, email, password, roles } = req.body
 
   // checking if the valid email
   if (!isValidEmail(email)) {
@@ -37,19 +36,34 @@ const register = async (req, res) => {
     })
   }
 
-  // hash password
-  const salt = await bcrypt.genSalt(10)
-  const hashPassword = await bcrypt.hash(password, salt)
-
   // create new user
-  const user = new User({ name, lastName, password: hashPassword, email })
+  const user = new User({
+    name,
+    lastName,
+    password: await User.encryptPassword(password),
+    email
+  })
+
+  // checking if send roles
+  if (roles) {
+    const foundRoles = await Role.find({ name: { $in: roles } })
+    user.roles = foundRoles.map(role => role._id)
+  } else {
+    const role = await Role.find({ name: 'user' })
+    user.roles = [role[0]._id]
+  }
+
+  const token = await User.generateToken(user)
 
   try {
     const savedUser = await user.save()
     res.status(201).send({
       success: true,
       message: 'user created successfully!',
-      user: savedUser._id
+      data: {
+        user: savedUser._id,
+        token
+      }
     })
   } catch (err) {
     res.status(500).send({
@@ -71,8 +85,8 @@ const login = async (req, res) => {
   }
 
   // checking if the email exist and password is correct
-  const user = await User.findOne({ email })
-  const validPass = await bcrypt.compare(password, user.password)
+  const user = await User.findOne({ email }).populate('roles')
+  const validPass = user ? await User.comparePassword(password, user.password) : false
 
   if (!validPass && !user) {
     return res.status(400).send({
@@ -81,22 +95,15 @@ const login = async (req, res) => {
     })
   }
 
-  // payload for token (req.user)
-  const userForToken = {
-    id: user._id,
-    username: `${user.name} ${user.lastName}`
-  }
-
-  const token = jwt.sign(userForToken, process.env.SECRET_KEY)
+  const token = await User.generateToken(user)
 
   res
     .status(200)
-    .header('auth-token', token)
     .send({
       success: true,
       message: 'Logged in!',
       data: {
-        username: `${user.name} ${user.lastName}`,
+        user,
         token
       }
     })
