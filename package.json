@@ -5,7 +5,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev-start": "nodemon index.js",
+    "dev-start": "nodemon ./src/index.js",
     "git-save": "git add . && git commit",
     "git-up": "git add . && git commit && git push -u origin"
   },
