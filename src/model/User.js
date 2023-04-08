@@ -48,7 +48,7 @@ userSchema.statics.comparePassword = async (password, receivedPassword) => {
 }
 
 userSchema.statics.generateToken = async (user) => {
-  // payload for token (req.user)
+  // payload for token (req.user in middleware verifyToken)
   const userForToken = {
     id: user._id,
     username: `${user.name} ${user.lastName}`

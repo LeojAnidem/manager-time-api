@@ -7,7 +7,7 @@ const isValidEmail = (email, res) => {
 }
 
 const register = async (req, res) => {
-  const { name, lastName, email, password, roles } = req.body
+  const { name, lastName, email, password } = req.body
 
   // checking if the valid email
   if (!isValidEmail(email)) {
@@ -41,17 +41,9 @@ const register = async (req, res) => {
     name,
     lastName,
     password: await User.encryptPassword(password),
-    email
+    email,
+    roles: [await Role.find({ name: 'user' })]
   })
-
-  // checking if send roles
-  if (roles) {
-    const foundRoles = await Role.find({ name: { $in: roles } })
-    user.roles = foundRoles.map(role => role._id)
-  } else {
-    const role = await Role.find({ name: 'user' })
-    user.roles = [role[0]._id]
-  }
 
   const token = await User.generateToken(user)
 
