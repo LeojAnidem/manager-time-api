@@ -6,19 +6,26 @@ const router = Router()
 
 router.get('/', authJwt.verifyToken, userController.get)
 router.put('/', authJwt.verifyToken, userController.modify)
+router.put('/change-password', authJwt.verifyToken, userController.modify)
 
 router.get('/all', [
   authJwt.verifyToken,
   authJwt.isModerator
 ], userController.getAll)
 
-router.put('/:userID/roles', [
+router.put('/roles/:userId', [
   authJwt.verifyToken,
   authJwt.isAdmin,
   verifySignUp.checkRolesExisted
 ], userController.modifyRoles)
 
-router.delete('/:userID', [
+router.delete('/roles/:userId', [
+  authJwt.verifyToken,
+  authJwt.isAdmin,
+  verifySignUp.checkRolesExisted
+], userController.removeRoles)
+
+router.delete('/:userId', [
   authJwt.verifyToken,
   authJwt.isAdmin
 ], userController.remove)

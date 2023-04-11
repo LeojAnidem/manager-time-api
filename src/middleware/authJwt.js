@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken'
 export const verifyToken = async (req, res, next) => {
   const token = req.header('auth-token')
   if (!token) {
-    return res.status(401).send({
+    return res.status(400).send({
       success: false,
       message: 'Access Denied!, No Token Provided!'
     })
@@ -16,16 +16,16 @@ export const verifyToken = async (req, res, next) => {
     const user = await User.findById(verified.id)
 
     if (!user) {
-      return res.status(404).send({
+      return res.status(498).send({
         success: false,
-        message: 'Access Denied!, User not found!'
+        message: 'Access Denied!, Token expired/invalid'
       })
     }
 
     req.user = verified
     next()
   } catch (err) {
-    return res.status(400).send({
+    return res.status(401).send({
       success: false,
       message: 'Access Denied!, you dont have permission!'
     })

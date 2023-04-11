@@ -7,7 +7,7 @@ const isValidEmail = (email, res) => {
 }
 
 const register = async (req, res) => {
-  const { name, lastName, email, password } = req.body
+  const { name, lastname, email, password } = req.body
 
   // checking if the valid email
   if (!isValidEmail(email)) {
@@ -39,28 +39,27 @@ const register = async (req, res) => {
   // create new user
   const user = new User({
     name,
-    lastName,
+    lastname,
     password: await User.encryptPassword(password),
     email,
-    roles: [await Role.find({ name: 'user' })]
+    roles: await Role.find({ name: 'user' })
   })
 
   const token = await User.generateToken(user)
 
   try {
-    const savedUser = await user.save()
+    await user.save()
     res.status(201).send({
       success: true,
       message: 'user created successfully!',
       data: {
-        user: savedUser._id,
         token
       }
     })
   } catch (err) {
     res.status(500).send({
       success: false,
-      message: err.message
+      message: err
     })
   }
 }
@@ -77,7 +76,7 @@ const login = async (req, res) => {
   }
 
   // checking if the email exist and password is correct
-  const user = await User.findOne({ email }).populate('roles')
+  const user = await User.findOne({ email }).select('+password').populate('roles')
   const validPass = user ? await User.comparePassword(password, user.password) : false
 
   if (!validPass && !user) {
@@ -95,7 +94,6 @@ const login = async (req, res) => {
       success: true,
       message: 'Logged in!',
       data: {
-        user,
         token
       }
     })

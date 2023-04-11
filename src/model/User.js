@@ -10,7 +10,7 @@ const userSchema = new Schema(
       min: 6,
       max: 255
     },
-    lastName: {
+    lastname: {
       type: String,
       required: [true, 'Please provide a lastName'],
       min: 6,
@@ -23,6 +23,7 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
+      select: false,
       required: [true, 'Please add a password'],
       min: 8,
       max: 1024
@@ -51,7 +52,7 @@ userSchema.statics.generateToken = async (user) => {
   // payload for token (req.user in middleware verifyToken)
   const userForToken = {
     id: user._id,
-    username: `${user.name} ${user.lastName}`
+    username: `${user.name} ${user.lastname}`
   }
 
   return await jwt.sign(userForToken, process.env.SECRET_KEY, {

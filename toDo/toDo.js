@@ -21,12 +21,12 @@
 
 // TODO [  ] Crear ruta de usuarios
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-// TODO [  ] Generar permisos por roles
+// TODO [ ✅ ] Generar permisos por roles
 // TODO [  ] feature recuperar contraseña
 // TODO [ ✅ ] creacion de usuario
-// TODO [  ] modificacion de usuario
-// TODO [  ] eliminacion de usuario
-// TODO [  ] gestion de usuario por admin
+// TODO [ ✅ ] modificacion de usuario
+// TODO [ ✅ ] eliminacion de usuario
+// TODO [ ✅ ] gestion de usuario por admin
 // ------------------------------------------------------
 // ------------------------------------------------------
 
