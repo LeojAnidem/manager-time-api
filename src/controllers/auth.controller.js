@@ -79,7 +79,7 @@ const login = async (req, res) => {
   const user = await User.findOne({ email }).select('+password').populate('roles')
   const validPass = user ? await User.comparePassword(password, user.password) : false
 
-  if (!validPass && !user) {
+  if (!validPass || !user) {
     return res.status(400).send({
       success: false,
       message: 'Invalid email or password'

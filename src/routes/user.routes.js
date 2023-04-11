@@ -7,6 +7,7 @@ const router = Router()
 router.get('/', authJwt.verifyToken, userController.get)
 router.put('/', authJwt.verifyToken, userController.modify)
 router.put('/change-password', authJwt.verifyToken, userController.changePassword)
+router.post('/recovery-password', userController.recoveryPassword)
 
 router.get('/all', [
   authJwt.verifyToken,

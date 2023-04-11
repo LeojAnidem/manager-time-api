@@ -1,5 +1,6 @@
 import Role from '../model/Role.js'
 import User from '../model/User.js'
+import recoveryController from './recoveryController.js'
 
 const get = async (req, res, next) => {
   try {
@@ -92,6 +93,43 @@ const changePassword = async (req, res, next) => {
     res.status(200).send({
       success: true,
       message: 'Change Password Successfully!'
+    })
+  } catch (err) {
+    return res.status(500).send({
+      success: false,
+      message: err
+    })
+  }
+}
+
+const recoveryPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body
+
+    // Check if the params are empty
+    if (Object.keys(req.body).length === 0) {
+      return res.status(400).send({
+        success: false,
+        message: 'Missing request params!'
+      })
+    }
+
+    const user = await User.findOne({ email }).select('+password')
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: 'User not found!'
+      })
+    }
+
+    const newPassword = Math.random().toString(36).substring(2, 10)
+    user.password = await User.encryptPassword(newPassword)
+    await user.save()
+    await recoveryController.sendMail(email, newPassword)
+
+    res.status(200).send({
+      success: true,
+      message: `New Password send to ${email}`
     })
   } catch (err) {
     return res.status(500).send({
@@ -275,4 +313,4 @@ const remove = async (req, res, next) => {
   }
 }
 
-export default { get, modify, changePassword, getAll, modifyRoles, removeRoles, remove }
+export default { get, modify, changePassword, recoveryPassword, getAll, modifyRoles, removeRoles, remove }
