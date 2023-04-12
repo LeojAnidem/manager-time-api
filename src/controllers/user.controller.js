@@ -102,7 +102,7 @@ const changePassword = async (req, res, next) => {
   }
 }
 
-const recoveryPassword = async (req, res, next) => {
+const sendVerificationCode = async (req, res, next) => {
   try {
     const { email } = req.body
 
@@ -114,7 +114,7 @@ const recoveryPassword = async (req, res, next) => {
       })
     }
 
-    const user = await User.findOne({ email }).select('+password')
+    const user = await User.findOne({ email })
     if (!user) {
       return res.status(404).send({
         success: false,
@@ -122,14 +122,76 @@ const recoveryPassword = async (req, res, next) => {
       })
     }
 
-    const newPassword = Math.random().toString(36).substring(2, 10)
-    user.password = await User.encryptPassword(newPassword)
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString()
+    user.verificationCode = verificationCode
+    user.expirationVerificationCode = Date.now() + 3600000
     await user.save()
-    await recoveryController.sendMail(email, newPassword)
+    await recoveryController.sendMail(email, verificationCode)
 
     res.status(200).send({
       success: true,
-      message: `New Password send to ${email}`
+      message: `Verification Code send to ${email}`
+    })
+  } catch (err) {
+    return res.status(500).send({
+      success: false,
+      message: err
+    })
+  }
+}
+
+const resetPassword = async (req, res, next) => {
+  try {
+    const { email, verificationCode, newPassword } = req.body
+
+    // Check if the params are empty
+    if (Object.keys(req.body).length === 0) {
+      return res.status(400).send({
+        success: false,
+        message: 'Missing request params!'
+      })
+    }
+
+    const user = await User.findOne({ email }).select('+password +verificationCode +expirationVerificationCode')
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: 'User not found!'
+      })
+    }
+
+    if (user.verificationCode !== verificationCode) {
+      return res.status(401).send({
+        success: false,
+        message: 'The verification code provided is invalid!'
+      })
+    }
+
+    if (user.expirationVerificationCode < Date.now()) {
+      return res.status(401).send({
+        success: false,
+        message: 'The verification code expired!'
+      })
+    }
+
+    // checking if the password is valid
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+    const isValidPassword = newPassword.match(passwordRegex)
+    if (!isValidPassword) {
+      return res.status(400).send({
+        success: false,
+        message: 'The password must be content: Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character'
+      })
+    }
+
+    user.password = await User.encryptPassword(newPassword)
+    user.verificationCode = null
+    user.expirationVerificationCode = null
+    await user.save()
+
+    res.status(200).send({
+      success: true,
+      message: 'Password has been changed successfully!'
     })
   } catch (err) {
     return res.status(500).send({
@@ -313,4 +375,4 @@ const remove = async (req, res, next) => {
   }
 }
 
-export default { get, modify, changePassword, recoveryPassword, getAll, modifyRoles, removeRoles, remove }
+export default { get, modify, changePassword, sendVerificationCode, resetPassword, getAll, modifyRoles, removeRoles, remove }

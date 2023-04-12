@@ -8,12 +8,12 @@ const transporter = nodemailer.createTransport({
   }
 })
 
-const sendMail = async (from, newPass) => {
+const sendMail = async (from, verificationCode) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: from,
-    subject: 'Password Recovery!',
-    text: `Your new Password is: ${newPass}`
+    subject: 'Verification Code',
+    text: `Your verification code is: ${verificationCode}`
   }
 
   try {

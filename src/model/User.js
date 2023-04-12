@@ -31,7 +31,15 @@ const userSchema = new Schema(
     roles: [{
       ref: 'Role',
       type: Schema.Types.ObjectId
-    }]
+    }],
+    verificationCode: {
+      type: String,
+      select: false
+    },
+    expirationVerificationCode: {
+      type: Date,
+      select: false
+    }
   },
   {
     versionKey: false,
