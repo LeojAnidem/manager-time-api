@@ -2,7 +2,7 @@
 // ------------------------------------------------------
 // ------------------------------------------------------
 
-// TODO [  ] Conectarse a base de datos
+// TODO [ ✅ ] Conectarse a base de datos
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // TODO [ ✅ ] crear esquema de usuario
 // TODO [ ✅ ] crear esquema de notas
@@ -10,19 +10,17 @@
 // ------------------------------------------------------
 // ------------------------------------------------------
 
-// TODO [  ] Crear ruta de autentificacion
+// TODO [ ✅ ] Crear ruta de autentificacion
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // TODO [ ✅ ] Generar JWT
-// TODO [  ] Refrescar JWT
-// TODO [  ] Cierre de sesion al expirar JWT
-// TODO [  ] Persistencia de sesion
+// TODO [ ✅ ] Refrescar JWT
 // ------------------------------------------------------
 // ------------------------------------------------------
 
-// TODO [  ] Crear ruta de usuarios
+// TODO [ ✅ ] Crear ruta de usuarios
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // TODO [ ✅ ] Generar permisos por roles
-// TODO [  ] feature recuperar contraseña
+// TODO [ ✅ ] feature recuperar contraseña
 // TODO [ ✅ ] creacion de usuario
 // TODO [ ✅ ] modificacion de usuario
 // TODO [ ✅ ] eliminacion de usuario

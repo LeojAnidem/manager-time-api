@@ -3,7 +3,9 @@ import Role from '../model/Role.js'
 import jwt from 'jsonwebtoken'
 
 export const verifyToken = async (req, res, next) => {
-  const token = req.header('auth-token')
+  const authHeader = req.headers.authorization
+  const token = authHeader && authHeader.split(' ')[1]
+
   if (!token) {
     return res.status(400).send({
       success: false,
@@ -13,6 +15,38 @@ export const verifyToken = async (req, res, next) => {
 
   try {
     const verified = jwt.verify(token, process.env.SECRET_KEY)
+    const user = await User.findById(verified.id)
+
+    if (!user) {
+      return res.status(498).send({
+        success: false,
+        message: 'Access Denied!, Token expired/invalid'
+      })
+    }
+
+    req.user = verified
+    next()
+  } catch (err) {
+    return res.status(401).send({
+      success: false,
+      message: 'Access Denied!, you dont have permission!'
+    })
+  }
+}
+
+export const verifyRefreshToken = async (req, res, next) => {
+  const authHeader = req.headers.authorization
+  const token = authHeader && authHeader.split(' ')[1]
+
+  if (!token) {
+    return res.status(400).send({
+      success: false,
+      message: 'Access Denied!, No Token Provided!'
+    })
+  }
+
+  try {
+    const verified = jwt.verify(token, process.env.SECRET_KEY_REFRESH)
     const user = await User.findById(verified.id)
 
     if (!user) {

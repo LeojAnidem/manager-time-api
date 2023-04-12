@@ -64,7 +64,18 @@ userSchema.statics.generateToken = async (user) => {
   }
 
   return await jwt.sign(userForToken, process.env.SECRET_KEY, {
-    expiresIn: 86400
+    expiresIn: '1h'
+  })
+}
+userSchema.statics.generateRefreshToken = async (user) => {
+  // payload for token (req.user in middleware verifyToken)
+  const userForToken = {
+    id: user._id,
+    username: `${user.name} ${user.lastname}`
+  }
+
+  return await jwt.sign(userForToken, process.env.SECRET_KEY_REFRESH, {
+    expiresIn: '7d'
   })
 }
 

@@ -46,6 +46,7 @@ const register = async (req, res) => {
   })
 
   const token = await User.generateToken(user)
+  const refreshToken = await User.generateRefreshToken(user)
 
   try {
     await user.save()
@@ -53,7 +54,8 @@ const register = async (req, res) => {
       success: true,
       message: 'user created successfully!',
       data: {
-        token
+        token,
+        refreshToken
       }
     })
   } catch (err) {
@@ -87,6 +89,7 @@ const login = async (req, res) => {
   }
 
   const token = await User.generateToken(user)
+  const refreshToken = await User.generateRefreshToken(user)
 
   res
     .status(200)
@@ -94,9 +97,30 @@ const login = async (req, res) => {
       success: true,
       message: 'Logged in!',
       data: {
-        token
+        token,
+        refreshToken
       }
     })
 }
 
-export default { register, login }
+const refreshToken = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user.id)
+    const token = await User.generateToken(user)
+
+    res.status(200).send({
+      success: true,
+      message: 'Token generate successfully!',
+      data: {
+        token
+      }
+    })
+  } catch (err) {
+    return res.status(500).send({
+      success: false,
+      message: err
+    })
+  }
+}
+
+export default { register, login, refreshToken }
