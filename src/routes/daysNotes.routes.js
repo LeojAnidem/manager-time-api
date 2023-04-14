@@ -9,9 +9,8 @@ router.post('/', authJwt.verifyToken, daysNotesController.create)
 router.put('/:dayNoteId', authJwt.verifyToken, daysNotesController.modify)
 router.delete('/:dayNoteId', authJwt.verifyToken, daysNotesController.remove)
 
-// averiguar sobre query strings para esta ruta
-// '/?start-date=YY/MM/DD&end-Date=YY//MM/DD'
-router.get('/', authJwt.verifyToken, daysNotesController.getDaysOnRange)
+// 'el formato debe ser YYYY-MM-DD'
+router.get('/:startDate/:endDate', authJwt.verifyToken, daysNotesController.getDaysOnRange)
 
 // Moderator rules
 router.get('/all', [
