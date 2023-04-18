@@ -37,6 +37,7 @@ const convertMilisecondsToText = (miliseconds) => {
 
   return {
     text: `${days}${hours}${minutes}`,
+    textOnlyHours: `${time.asHours()} hora(s)`,
     obj: time
   }
 }
@@ -302,7 +303,7 @@ const getDaysOnRange = async (req, res) => {
 
     const totalPayment = daysNotes.reduce((acc, { expectedPayment }) => acc + expectedPayment, 0)
     const totalMiliseconds = daysNotes.reduce((acc, { totalHours }) => acc + totalHours.time, 0)
-    const totalHours = convertMilisecondsToText(totalMiliseconds).text
+    const totalHours = convertMilisecondsToText(totalMiliseconds).textOnlyHours
 
     res.status(200).send({
       success: true,
