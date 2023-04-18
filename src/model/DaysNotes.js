@@ -21,6 +21,10 @@ const dateSchema = new Schema({
     type: String,
     required: true
   },
+  dateString: {
+    type: String,
+    required: true
+  },
   _id: false
 })
 

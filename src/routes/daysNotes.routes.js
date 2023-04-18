@@ -4,7 +4,9 @@ import daysNotesController from '../controllers/daysNotes.controller.js'
 
 const router = Router()
 
+// include query params ?sort
 router.get('/', authJwt.verifyToken, daysNotesController.get)
+
 router.post('/', authJwt.verifyToken, daysNotesController.create)
 router.put('/:dayNoteId', authJwt.verifyToken, daysNotesController.modify)
 router.delete('/:dayNoteId', authJwt.verifyToken, daysNotesController.remove)
