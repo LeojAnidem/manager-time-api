@@ -7,8 +7,15 @@ const configDate = {
   format: 'YYYY-MM-DD'
 }
 
+const convertToTime = (stringDate, { isFormatFull = false, toDate = false }) => {
+  const format = isFormatFull ? configDate.formatFull : configDate.format
+  const time = moment.tz(stringDate, format, configDate.timeZone)
+  return toDate ? time.toDate() : time
+}
+
 const convertAtDateObj = (dateString) => {
-  const parseDate = moment.tz(dateString, configDate.format, configDate.timeZone).toDate()
+  const parseDate = convertToTime(dateString, { toDate: true })
+
   return {
     date: {
       year: parseDate.getFullYear(),
@@ -16,27 +23,37 @@ const convertAtDateObj = (dateString) => {
       day: parseDate.getDate(),
       monthName: months[parseDate.getMonth()],
       dayName: daysOfWeek[parseDate.getDay()],
-      dateString: parseDate.toDateString()
+      dateString: parseDate.toDateString(),
+      dateObj: parseDate
     }
   }
 }
 
+const convertMilisecondsToText = (miliseconds) => {
+  const time = moment.duration(miliseconds)
+  const days = time.days() !== 0 ? `${time.days()} dia ` : ''
+  const hours = time.hours() !== 0 ? `${time.hours()} hora(s) ` : ''
+  const minutes = time.minutes() !== 0 ? `${time.minutes()} minuto(s)` : ''
+
+  return {
+    text: `${days}${hours}${minutes}`,
+    obj: time
+  }
+}
+
 const obtainedTimeAndPay = (date, startTime, endTime, price) => {
-  const parseStart = moment.tz(`${date} ${startTime}`, configDate.formatFull, configDate.timeZone)
-  const parseEnd = moment.tz(`${date} ${endTime}`, configDate.formatFull, configDate.timeZone)
+  const parseStart = convertToTime(`${date} ${startTime}`, { isFormatFull: true })
+  const parseEnd = convertToTime(`${date} ${endTime}`, { isFormatFull: true })
   const parsePrice = price.includes('.') ? parseFloat(price) : parseInt(price)
 
   if (parseEnd.isBefore(parseStart) || parseEnd.isSame(parseStart)) parseEnd.add(1, 'day')
 
-  const timeTotal = moment.duration(parseEnd.toDate().getTime() - parseStart.toDate().getTime())
-  const days = timeTotal.days() !== 0 ? `${timeTotal.days()} dia ` : ''
-  const hours = timeTotal.hours() !== 0 ? `${timeTotal.hours()} hora(s) ` : ''
-  const minutes = timeTotal.minutes() !== 0 ? `${timeTotal.minutes()} minuto(s)` : ''
-  const totalHours = `${days}${hours}${minutes}`
+  const miliseconds = parseEnd.toDate().getTime() - parseStart.toDate().getTime()
+  const timeTotal = convertMilisecondsToText(miliseconds)
 
-  const daysToHour = timeTotal.days() !== 0 ? 24 : 0
-  const minutesToHour = timeTotal.minutes() > 0
-    ? (timeTotal.minutes() <= 30 ? 0.5 : 1)
+  const daysToHour = timeTotal.obj.days() !== 0 ? 24 : 0
+  const minutesToHour = timeTotal.obj.minutes() > 0
+    ? (timeTotal.obj.minutes() <= 30 ? 0.5 : 1)
     : 0
 
   const expectedPayment = (
@@ -47,8 +64,8 @@ const obtainedTimeAndPay = (date, startTime, endTime, price) => {
     startTime: parseStart.format('h:mm a'),
     endTime: parseEnd.format('h:mm a'),
     totalHours: {
-      text: totalHours,
-      time: timeTotal.asMilliseconds()
+      text: timeTotal.text,
+      time: timeTotal.obj.asMilliseconds()
     },
     expectedPayment,
     price: parsePrice
@@ -144,7 +161,8 @@ const create = async (req, res, next) => {
 const get = async (req, res, next) => {
   try {
     const daysNotes = await DaysNotes.find({ author: req.user.id }).select('-createdAt -updatedAt -author')
-    if (daysNotes.length > 0) {
+    console.log(daysNotes)
+    if (daysNotes.length === 0) {
       return res.status(404).send({
         success: false,
         message: 'No days Notes Found!'
@@ -159,7 +177,7 @@ const get = async (req, res, next) => {
 
     res.status(200).send({
       success: true,
-      message: '',
+      message: 'Days notes get successfully!',
       data: {
         sortDate
       }
@@ -263,7 +281,44 @@ const remove = async (req, res) => {
 }
 
 const getDaysOnRange = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.params
+    const pStartDate = convertToTime(startDate, { toDate: true })
+    const pEndDate = convertToTime(endDate, { toDate: true })
 
+    const daysNotes = await DaysNotes.find({
+      'date.dateObj': {
+        $gte: pStartDate,
+        $lt: pEndDate
+      }
+    }).select('-createdAt -updatedAt')
+
+    if (daysNotes.length === 0) {
+      return res.status(404).send({
+        success: false,
+        message: 'Not days notes found!'
+      })
+    }
+
+    const totalPayment = daysNotes.reduce((acc, { expectedPayment }) => acc + expectedPayment, 0)
+    const totalMiliseconds = daysNotes.reduce((acc, { totalHours }) => acc + totalHours.time, 0)
+    const totalHours = convertMilisecondsToText(totalMiliseconds).text
+
+    res.status(200).send({
+      success: true,
+      message: 'Days within the established date range successfully obtained.',
+      data: {
+        daysOnRange: daysNotes,
+        totalHours,
+        totalPayment
+      }
+    })
+  } catch (err) {
+    return res.status(500).send({
+      success: false,
+      message: err
+    })
+  }
 }
 
 const getAll = (req, res) => {
