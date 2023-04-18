@@ -175,12 +175,6 @@ const get = async (req, res, next) => {
 const modify = async (req, res) => {
   try {
     const { dayNoteId } = req.params
-    if (!dayNoteId) {
-      return res.status(400).send({
-        success: false,
-        message: 'dayNoteId not provided!'
-      })
-    }
 
     // Check if the params are empty
     if (Object.keys(req.body).length === 0) {
@@ -245,7 +239,27 @@ const modify = async (req, res) => {
 }
 
 const remove = async (req, res) => {
+  try {
+    const { dayNoteId } = req.params
 
+    const dayNote = await DaysNotes.findOneAndDelete({ author: req.user.id, _id: dayNoteId })
+    if (!dayNote) {
+      return res.status(404).send({
+        success: false,
+        message: 'Day Note not found!'
+      })
+    }
+
+    res.status(200).send({
+      success: true,
+      message: 'Day Note deleted succesfully!'
+    })
+  } catch (err) {
+    return res.status(500).send({
+      success: false,
+      message: err
+    })
+  }
 }
 
 const getDaysOnRange = async (req, res) => {
