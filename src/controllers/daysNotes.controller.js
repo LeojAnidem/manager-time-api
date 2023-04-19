@@ -1,5 +1,7 @@
 import DaysNotes from '../model/DaysNotes.js'
 import moment from 'moment-timezone'
+import Role from '../model/Role.js'
+import User from '../model/User.js'
 
 const configDate = {
   timeZone: 'America/New_York',
@@ -58,7 +60,7 @@ const obtainedTimeAndPay = (date, startTime, endTime, price) => {
     : 0
 
   const expectedPayment = (
-    daysToHour + timeTotal.hours() + minutesToHour
+    daysToHour + timeTotal.obj.hours() + minutesToHour
   ) * parsePrice
 
   return {
@@ -152,6 +154,7 @@ const create = async (req, res, next) => {
       }
     })
   } catch (err) {
+    console.log(err)
     return res.status(500).send({
       success: false,
       message: err
@@ -184,6 +187,7 @@ const get = async (req, res, next) => {
       }
     })
   } catch (err) {
+    console.log(err)
     return res.status(500).send({
       success: false,
       message: err
@@ -274,6 +278,7 @@ const remove = async (req, res) => {
       message: 'Day Note deleted succesfully!'
     })
   } catch (err) {
+    console.log(err)
     return res.status(500).send({
       success: false,
       message: err
@@ -315,6 +320,7 @@ const getDaysOnRange = async (req, res) => {
       }
     })
   } catch (err) {
+    console.log(err)
     return res.status(500).send({
       success: false,
       message: err
@@ -322,8 +328,38 @@ const getDaysOnRange = async (req, res) => {
   }
 }
 
-const getAll = (req, res) => {
-  return res.status(200).send('Valid!')
+const getAll = async (req, res) => {
+  try {
+    const { roles } = await User.findOne({ _id: req.user.id }).select('roles -_id')
+    const adminRoleId = await Role.findOne({ name: 'admin' }).select('_id')
+    const moderatorRoleId = await Role.findOne({ name: 'moderator' }).select('_id')
+    const rolesIdExclude = roles.includes(adminRoleId._id) ? [] : [adminRoleId._id, moderatorRoleId._id]
+
+    const exludeObjIdS = await User.find({ roles: { $in: rolesIdExclude } }).select('_id')
+    const usersIdsExclude = exludeObjIdS.map(({ _id }) => _id)
+    const daysNotes = await DaysNotes.find({ author: { $not: { $in: usersIdsExclude } } })
+
+    if (!daysNotes) {
+      return res.status(404).send({
+        success: false,
+        message: 'Not Days Notes Found!'
+      })
+    }
+
+    res.status(200).send({
+      success: true,
+      message: 'Days Notes get successfully!',
+      data: {
+        daysNotes
+      }
+    })
+  } catch (err) {
+    console.log(err)
+    return res.status(500).send({
+      success: false,
+      message: err
+    })
+  }
 }
 
 export default { create, get, modify, remove, getDaysOnRange, getAll }

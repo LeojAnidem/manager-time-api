@@ -28,11 +28,11 @@
 // ------------------------------------------------------
 // ------------------------------------------------------
 
-// TODO [  ] Crear ruta de notas
+// TODO [ ✅ ] Crear ruta de notas
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 // TODO [ ✅ ] creacion de notas
-// TODO [  ] modificacion de notas
-// TODO [  ] eliminacion de notas
+// TODO [ ✅ ] modificacion de notas
+// TODO [ ✅ ] eliminacion de notas
 // TODO [  ] gestion de notas por admin
 //           Filtrar por id, fecha, valor, hora
 // ------------------------------------------------------
