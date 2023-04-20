@@ -7,7 +7,7 @@
   "scripts": {
     "dev-start": "nodemon ./src/index.js",
     "git-save": "git add . && git commit",
-    "git-up": "git add . && git commit && git push -u origin"
+    "git-up": "git push -u origin"
   },
   "keywords": [],
   "author": "@Leoj_Anidem [Instagram/GitHub]",

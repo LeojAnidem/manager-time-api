@@ -211,6 +211,7 @@ const remove = async (req, res) => {
   }
 }
 
+// Agregar un parametro a la devolucion 'fromTo: 'Del 1 al 15 de Abril''
 const getDaysOnRange = async (req, res) => {
   try {
     const { startDate, endDate } = req.params
